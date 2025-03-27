@@ -1,0 +1,97 @@
+#include <stdint.h>
+#include <stdbool.h>
+#include "inc/hw_memmap.h"
+#include "driverlib/debug.h"
+#include "driverlib/gpio.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/interrupt.h"
+#include "driverlib/timer.h"
+#include "inc/hw_ints.h"
+
+#include "string.h"
+
+#include "driverlib/uart.h"
+#include "utils/uartstdio.c"
+#include "utils/uartstdio.h"
+
+#include "driverlib/pwm.h"
+#include "driverlib/rom.h"
+
+#include "driverlib/pin_map.h"
+
+char msg1[10]="motor1\n";
+char msg2[10]="motor2\n";
+char data[10] = "";
+
+
+int main(void) {
+    
+    SysCtlClockFreqSet((SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480),120000000);
+    
+    
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
+    
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+    
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPION);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOJ);
+    
+    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPION))
+    {
+    }
+    
+    
+    GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE, 0x00000003);
+    
+    GPIOPinConfigure(GPIO_PA0_U0RX);
+    GPIOPinConfigure(GPIO_PA1_U0TX);
+    GPIOPinTypeUART(GPIO_PORTA_BASE, 0X03);
+    
+    GPIOPinTypeGPIOInput(GPIO_PORTJ_BASE, GPIO_PIN_1);
+    GPIOPadConfigSet(GPIO_PORTJ_BASE, GPIO_PIN_1, GPIO_STRENGTH_8MA, GPIO_PIN_TYPE_STD_WPU);
+    GPIOPinTypeGPIOInput(GPIO_PORTJ_BASE, GPIO_PIN_0);
+    GPIOPadConfigSet(GPIO_PORTJ_BASE, GPIO_PIN_0, GPIO_STRENGTH_8MA, GPIO_PIN_TYPE_STD_WPU);        
+    
+    
+    UARTStdioConfig(0, 9600, 120000000);
+    
+    //while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPION)){}
+    //GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE, 0x02);
+    //GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE, 0x02);
+    
+    
+    while (1) {
+    	UARTEnable(UART0_BASE);
+    	
+    
+    
+    	//SysCtlDelay((120000000 / (3))*2);
+    	
+        if (GPIOPinRead(GPIO_PORTJ_BASE, GPIO_PIN_0) == 0) {    	
+    		GPIOPinWrite(GPIO_PORTN_BASE, 0x01, 0x01);
+    	
+    		UARTprintf(msg1);
+    		SysCtlDelay((120000000 / (3))*2);
+    	
+    	}
+    	if (GPIOPinRead(GPIO_PORTJ_BASE, GPIO_PIN_1) == 0) {    	
+    		GPIOPinWrite(GPIO_PORTN_BASE, 0x02, 0x02);
+    	
+    		UARTprintf(msg2);
+    	
+    		SysCtlDelay((120000000 / (3))*2);
+    	}
+    	
+    	GPIOPinWrite(GPIO_PORTN_BASE, 0x01, 0x00);
+    	GPIOPinWrite(GPIO_PORTN_BASE, 0x02, 0x00);
+    	 	
+    }
+}
+
+void timer0A_handler(void)
+{
+	
+	
+        
+	
+}
