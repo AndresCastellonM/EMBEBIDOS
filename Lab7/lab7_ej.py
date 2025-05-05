@@ -224,13 +224,13 @@ class VideoCapture(VideoCaptureAbs):
         lower, upper = None, None
 
         if color == "red":
-            lower = np.array([0, 100, 100])
+            lower = np.array([0, 0, 0])
             upper = np.array([10, 255, 255])
         elif color == "green":
-            lower = np.array([50, 100, 100])
+            lower = np.array([50, 0, 0])
             upper = np.array([70, 255, 255])
         elif color == "blue":
-            lower = np.array([100, 100, 100])
+            lower = np.array([100, 0, 0])
             upper = np.array([130, 255, 255])
         else:
             print(f"[ERROR] Color no válido: {color}")
